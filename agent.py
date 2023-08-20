@@ -1,14 +1,9 @@
 from langchain import OpenAI
 from langchain.agents import create_pandas_dataframe_agent
+from langchain.agents.agent_types import AgentType
 import pandas as pd
+import streamlit as st
 
-# Setting up the api key
-import environ
-
-env = environ.Env()
-environ.Env.read_env()
-
-API_KEY = env("apikey")
 
 
 def create_agent(filename: str):
@@ -23,7 +18,7 @@ def create_agent(filename: str):
     """
 
     # Create an OpenAI object.
-    llm = OpenAI(openai_api_key=API_KEY)
+    llm = OpenAI(openai_api_key=st.session_state.OPENAI_API_KEY)
 
     # Read the CSV file into a Pandas DataFrame.
     df = pd.read_csv(filename)
@@ -44,43 +39,46 @@ def query_agent(agent, query):
         The response from the agent as a string.
     """
 
-    prompt = (
-        """
-            For the following query, if it requires drawing a table, reply as follows:
-            {"table": {"columns": ["column1", "column2", ...], "data": [[value1, value2, ...], [value1, value2, ...], ...]}}
+    # prompt = (
+    #     """
+    #         For the following query, if it requires drawing a table, reply as follows:
+    #         {"table": {"columns": ["column1", "column2", ...], "data": [[value1, value2, ...], [value1, value2, ...], ...]}}
 
-            If the query requires creating a bar chart, reply as follows:
-            {"bar": {"columns": ["A", "B", "C", ...], "data": [25, 24, 10, ...]}}
+    #         If the query requires creating a bar chart, reply as follows:
+    #         {"bar": {"columns": ["A", "B", "C", ...], "data": [25, 24, 10, ...]}}
             
-            If the query requires creating a line chart, reply as follows:
-            {"line": {"columns": ["A", "B", "C", ...], "data": [25, 24, 10, ...]}}
+    #         If the query requires creating a line chart, reply as follows:
+    #         {"line": {"columns": ["A", "B", "C", ...], "data": [25, 24, 10, ...]}}
             
-            There can only be two types of chart, "bar" and "line".
+    #         There can only be two types of chart, "bar" and "line".
             
-            If it is just asking a question that requires neither, reply as follows:
-            {"answer": "answer"}
-            Example:
-            {"answer": "The title with the highest rating is 'Gilead'"}
+    #         If it is just asking a question that requires neither, reply as follows:
+    #         {"answer": "answer"}
+    #         Example:
+    #         {"answer": "The title with the highest rating is 'Gilead'"}
             
-            If you do not know the answer, reply as follows:
-            {"answer": "I do not know."}
+    #         If you do not know the answer, reply as follows:
+    #         {"answer": "I do not know."}
             
-            Return all output as a string.
+    #         Return all output as a string.
             
-            All strings in "columns" list and data list, should be in double quotes,
+    #         All strings in "columns" list and data list, should be in double quotes,
             
-            For example: {"columns": ["title", "ratings_count"], "data": [["Gilead", 361], ["Spider's Web", 5164]]}
+    #         For example: {"columns": ["title", "ratings_count"], "data": [["Gilead", 361], ["Spider's Web", 5164]]}
             
-            Lets think step by step.
+    #         Lets think step by step.
             
-            Below is the query.
-            Query: 
-            """
-        + query
-    )
+    #         Below is the query.
+    #         Query: 
+    #         """
+    #     + query
+    # )
+
 
     # Run the prompt through the agent.
-    response = agent.run(prompt)
+    response = agent.run(query)
 
     # Convert the response to a string.
-    return response.__str__()
+    # return response.__str__()
+    return response
+
