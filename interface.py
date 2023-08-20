@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import json
+import os 
 
 from agent import query_agent, create_agent
 
@@ -52,8 +53,18 @@ def write_response(response_dict: dict):
         df = pd.DataFrame(data["data"], columns=data["columns"])
         st.table(df)
 
+with st.sidebar:
+    st.text("Enter your OpenAI API Key")
+    st.session_state.OPENAI_API_KEY = st.text_input(label='*We do NOT store and cannot view your API key*',
+                                                    placeholder='sk-p999HAfj6Cm1bO00SXgJc7kFxvFPtQ1KBBWrqSOU',
+                                                    type="password",
+                                                    help='You can find your Secret API key at \
+                                                            https://platform.openai.com/account/api-keys')
+    
+# Setting up the api key
 
-st.title("👨‍💻 Chat with your CSV")
+    
+st.title("👨‍💻 ZOE")
 
 st.write("Please upload your CSV file below.")
 
@@ -62,6 +73,11 @@ data = st.file_uploader("Upload a CSV")
 query = st.text_area("Insert your query")
 
 if st.button("Submit Query", type="primary"):
+    if not st.session_state.OPENAI_API_KEY:
+        st.info("Please add your OpenAI API key to continue.")
+        st.stop()
+
+    os.environ["OPENAI_API_KEY"] = st.session_state.OPENAI_API_KEY
     # Create an agent from the CSV file.
     agent = create_agent(data)
 
@@ -69,7 +85,8 @@ if st.button("Submit Query", type="primary"):
     response = query_agent(agent=agent, query=query)
 
     # Decode the response.
-    decoded_response = decode_response(response)
+    #decoded_response = decode_response(response)
 
     # Write the response to the Streamlit app.
-    write_response(decoded_response)
+    #write_response(decoded_response)
+    st.write(response)
