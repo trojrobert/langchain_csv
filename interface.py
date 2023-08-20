@@ -56,7 +56,7 @@ def write_response(response_dict: dict):
 with st.sidebar:
     st.text("Enter your OpenAI API Key")
     st.session_state.OPENAI_API_KEY = st.text_input(label='*We do NOT store and cannot view your API key*',
-                                                    placeholder='sk-p999HAfj6Cm1bO00SXgJc7kFxvFPtQ1KBBWrqSOU',
+                                                    placeholder='',
                                                     type="password",
                                                     help='You can find your Secret API key at \
                                                             https://platform.openai.com/account/api-keys')
