@@ -6,7 +6,7 @@ import streamlit as st
 
 
 
-def create_agent(filename: str):
+def create_agent(dataframe: pd.DataFrame, llm):
     """
     Create an agent that can access and use a large language model (LLM).
 
@@ -17,14 +17,11 @@ def create_agent(filename: str):
         An agent that can access and use the LLM.
     """
 
-    # Create an OpenAI object.
-    llm = OpenAI(openai_api_key=st.session_state.OPENAI_API_KEY)
-
-    # Read the CSV file into a Pandas DataFrame.
-    df = pd.read_csv(filename)
+    # # Create an OpenAI object.
+    # llm = OpenAI(openai_api_key=st.session_state.OPENAI_API_KEY)
 
     # Create a Pandas DataFrame agent.
-    return create_pandas_dataframe_agent(llm, df, verbose=False)
+    return create_pandas_dataframe_agent(llm, dataframe, verbose=False)
 
 
 def query_agent(agent, query):
