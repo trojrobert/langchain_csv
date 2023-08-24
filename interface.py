@@ -120,8 +120,7 @@ if document_type:
         file_uploaded = "database"
 
        
-        
-
+    
 # else:
 #     st.write("Please select a document type")
 
