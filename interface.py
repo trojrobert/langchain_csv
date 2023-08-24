@@ -70,7 +70,7 @@ with st.sidebar:
     
 
 # Title and banner for the home page    
-st.title("👨 ZOE")
+st.title(" 👱‍♀️ ZOE")
 
 file_uploaded = None 
 loader = None
