@@ -5,8 +5,8 @@ import os
 
 from langchain.llms import OpenAI
 from langchain.chains import RetrievalQA
-from agent import query_agent, create_agent
-from database import connect_to_db
+from pandas_agent import query_agent, create_agent
+from database_agent import connect_to_db
 from utils import store_data_as_vectors
 from langchain.document_loaders.csv_loader import CSVLoader
 
@@ -70,7 +70,7 @@ with st.sidebar:
     
 
 # Title and banner for the home page    
-st.title("👨‍💻 ZOE")
+st.title("👨 ZOE")
 
 file_uploaded = None 
 loader = None
@@ -97,11 +97,6 @@ if document_type:
                 "pandas loader")
                 )
             
-            if loader == "csv loader":
-                pass
-
-            if loader == "pandas loader":
-                pass
     if document_type == ".pdf":
         file_uploaded = st.file_uploader("Upload .pdf file", type="pdf")
         st.write(".pdf file uploaded")
@@ -114,16 +109,24 @@ if document_type:
         st.write("Still on development")
         st.stop()
 
-    if document_type == "db":
-        st.write("Still on delopment")
-        st.stop()
+    if document_type == "database":
+        st.write("database selected")
+        st.warning("This only work with postgres database")
+        
+        st.session_state.username = st.text_input(label="username")
+        st.session_state.password = st.text_input(label="password")
+        st.session_state.host = st.text_input(label="host")
+        st.session_state.port = st.text_input(label="port") 
+        file_uploaded = "database"
+
+       
         
 
 # else:
 #     st.write("Please select a document type")
 
 
-if file_uploaded and loader: 
+if file_uploaded==".csv" and loader: 
     query = st.text_area("Insert your query")
 
     if st.button("Submit Query", type="primary"):
@@ -167,8 +170,37 @@ if file_uploaded and loader:
 
                 st.write(response)
 
+if file_uploaded=="database":
 
+    query = st.text_area("Insert your query")
 
+    if st.button("Submit Query", type="primary"):
+        if not st.session_state.OPENAI_API_KEY:
+            st.info("Please add your OpenAI API key to continue.")
+            st.stop()
+    
+        os.environ["OPENAI_API_KEY"] = st.session_state.OPENAI_API_KEY
+
+        if not st.session_state.username:
+            st.info("Please add database username")
+        
+        if not st.session_state.password:
+            st.info("Please add database password")
+
+        if not st.session_state.port:
+            st.info("Please add database port")
+        
+        if not st.session_state.host:
+            st.info("Please add database host")
+
+        # Create Database agent to connect to database 
+        db_connection = connect_to_db(username=st.session_state.username,
+                    password=st.session_state.password,
+                    host=st.session_state.host,
+                    port=st.session_state.port) 
+        
+        response = db_connection.run(query)
+        st.write(response)
 
 # st.write("Please upload your CSV file below.")
 
